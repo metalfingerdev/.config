@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Internet
+Exec=google-chrome-stable
+Icon=google-chrome
+Terminal=false

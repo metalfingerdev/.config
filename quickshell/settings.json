@@ -1,0 +1,26 @@
+{
+    "settings": {
+        "bar": {
+            "fontSize": 12,
+            "monochromeTrayIcons": true,
+            "trayIconSize": 16
+        },
+        "currentTheme": "default",
+        "execCommands": {
+            "files": "nemo",
+            "terminal": "kitty"
+        },
+        "militaryTimeClockFormat": true,
+        "setWallpaperToThemeWallpaper": true,
+        "systemDetails": {
+            "cpu": "AMD Ryzen 5 5500U",
+            "gpu": "AMD Radeon Lucienne",
+            "osName": "NixOS",
+            "osVersion": "25.11 (Xantusia)",
+            "ram": "7GB",
+            "user": "manju"
+        },
+        "systemProfileImageSource": "/home/manju/Pictures/profile.png",
+        "version": "0.1"
+    }
+}
