@@ -42,7 +42,7 @@ Repeater {
         height: 28
         // Integrate with your established styling
         radius: Config.radius
-        color: "transparent"
+        color: Config.highlight
 
         IconImage {
             anchors.centerIn: parent

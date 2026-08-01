@@ -7,9 +7,6 @@ import Quickshell.Io
 import Quickshell.Wayland
 import qs.buttons
 import qs.config
-import qs.launcher
-import qs.popup
-import qs.services
 import qs.trays
 
 Scope {

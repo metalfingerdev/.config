@@ -50,7 +50,7 @@ RowLayout {
         z: 10
         width: 32
         height: 32
-        color: launcherMouseArea.containsMouse ? Config.accent : Config.bgDark
+        color: launcherMouseArea.containsMouse ? Config.accent : Config.highlight
         radius: Config.radius
 
         Text {

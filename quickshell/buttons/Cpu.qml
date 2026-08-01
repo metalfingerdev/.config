@@ -2,7 +2,7 @@
 import QtQuick
 import Quickshell
 import qs.config
-import qs.popup
+import qs.menus
 import qs.services
 
 Rectangle {
@@ -11,7 +11,7 @@ Rectangle {
     implicitWidth: cpuText.implicitWidth + 12
     implicitHeight: 28
     radius: Config.radius
-    color: cpuArea.containsMouse ? Config.accent : Config.bgDark
+    color: cpuArea.containsMouse ? Config.accent : Config.highlight
 
     Text {
         id: cpuText
@@ -20,6 +20,7 @@ Rectangle {
         color: cpuArea.containsMouse ? Config.bgDark : Config.foreground
         text: CpuService.usageStr
         font.pixelSize: Config.fontSize
+        font.family: Config.font
     }
 
     MouseArea {

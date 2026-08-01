@@ -1,15 +1,9 @@
 //@ pragma UseQApplication
-//@ pragma IconTheme breeze-dark
 import Quickshell
-import qs.bar
-import qs.dashboard
-import qs.launcher
+import qs.popup
 import qs.widgets
 
 Scope {
-    Dashboard {
-    }
-
     Bar {
     }
 
@@ -17,6 +11,9 @@ Scope {
     }
 
     Desktop {
+    }
+
+    Popup {
     }
 
 }

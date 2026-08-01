@@ -2,16 +2,16 @@
 import QtQuick
 import Quickshell
 import qs.config
-import qs.popup
+import qs.menus
 import qs.services
 
 Rectangle {
     id: netBtn
 
-    implicitWidth: netIcon.implicitWidth + 12
+    implicitWidth: 28
     implicitHeight: 28
     radius: Config.radius
-    color: netArea.containsMouse ? Config.accent : Config.bgDark
+    color: netArea.containsMouse ? Config.accent : Config.highlight
 
     Text {
         id: netIcon
@@ -48,7 +48,7 @@ Rectangle {
         onClicked: netPopup.toggle()
     }
 
-    Popup {
+    Menu {
         id: netPopup
 
         anchorItem: netBtn

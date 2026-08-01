@@ -111,7 +111,7 @@ PanelWindow {
                         Layout.fillHeight: true
                         Layout.margins: 10
                         radius: 6
-                        color: iconMouse.pressed ? modelData.active : iconMouse.containsMouse ? modelData.hover : "transparent"
+                        color: iconMouse.pressed ? modelData.active : iconMouse.containsMouse ? modelData.hover : Config.highlight
 
                         Text {
                             anchors.centerIn: parent
@@ -159,12 +159,22 @@ PanelWindow {
                     border.width: 1
                     radius: 12
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: modelData
-                        font.pixelSize: 24
-                        font.bold: true
-                        color: "#d8cab8"
+                    // Changed from Layout to anchors
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        radius: 6
+                        color: Config.highlight
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: modelData
+                            font.pixelSize: 24
+                            font.bold: true
+                            font.family: Config.fontMono
+                            color: "#d8cab8"
+                        }
+
                     }
 
                 }

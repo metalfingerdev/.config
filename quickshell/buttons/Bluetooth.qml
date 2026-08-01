@@ -2,16 +2,16 @@
 import QtQuick
 import Quickshell
 import qs.config
-import qs.popup
+import qs.menus
 import qs.services
 
 Rectangle {
     id: btBtn
 
-    implicitWidth: btLabel.implicitWidth + 12
+    implicitWidth: 28
     implicitHeight: 28
     radius: Config.radius
-    color: btArea.containsMouse ? Config.accent : Config.bgDark
+    color: btArea.containsMouse ? Config.accent : Config.highlight
 
     Text {
         id: btLabel
@@ -19,6 +19,7 @@ Rectangle {
         anchors.centerIn: parent
         color: btArea.containsMouse ? Config.bgDark : Config.foreground
         font.pixelSize: 16
+        font.family: Config.font
         text: {
             if (!BluetoothAdapter.available)
                 return "󰂲";
@@ -36,12 +37,12 @@ Rectangle {
     MouseArea {
         id: btArea
 
-        anchors.fill: parent
+        anchors.fill: btBtn
         hoverEnabled: true
         onClicked: btPopup.toggle()
     }
 
-    Popup {
+    Menu {
         id: btPopup
 
         anchorItem: btBtn

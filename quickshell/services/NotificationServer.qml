@@ -6,19 +6,34 @@ import Quickshell.Services.Notifications
 pragma Singleton
 
 Singleton {
+    // no criticalTimeout — critical notifications persist until dismissed
+
     id: root
 
     readonly property alias raw: server
     // appName, appIcon, summary, body, image, urgency, hasActions, notifId, time, notifObj
     property ListModel list
-
-    list: ListModel {
-    }
-
     property int defaultTimeout: 5000
+    property int lowTimeout: 3000
+    property int normalTimeout: 5000
 
     signal added(var notification)
     signal removed(int notifId)
+
+    function timeoutFor(notification) {
+        if (notification.expireTimeout > 0)
+            return notification.expireTimeout * 1000;
+
+        // urgency: 0 = low, 1 = normal, 2 = critical
+        switch (notification.urgency) {
+        case 2:
+            return -1; // never auto-expire
+        case 0:
+            return root.lowTimeout;
+        default:
+            return root.normalTimeout;
+        }
+    }
 
     function indexOf(notifId) {
         for (let i = 0; i < list.count; i++) {
@@ -70,20 +85,30 @@ Singleton {
         list.clear();
     }
 
-    Component {
-        id: timeoutComponent
+    function activate(notifId) {
+        const idx = indexOf(notifId);
+        if (idx === -1)
+            return ;
 
-        Timer {
-            property var notification
-
-            interval: notification && notification.expireTimeout > 0 ? notification.expireTimeout : root.defaultTimeout
-            running: true
-            onTriggered: {
-                root.expire(notification.id);
-                destroy();
+        const notif = list.get(idx).notifObj;
+        if (notif) {
+            for (const action of notif.actions) {
+                if (action.identifier === "default") {
+                    action.invoke();
+                    return ;
+                }
             }
         }
+    }
 
+    function resolveIcon(icon) {
+        if (icon === "")
+            return "";
+
+        if (icon.startsWith("file://") || icon.startsWith("http://") || icon.startsWith("https://") || icon.startsWith("/"))
+            return icon;
+
+        return Quickshell.iconPath(icon, true);
     }
 
     NotificationServer {
@@ -98,7 +123,7 @@ Singleton {
         keepOnReload: true
         onNotification: (notification) => {
             notification.tracked = true;
-            root.list.append({
+            root.list.insert(0, {
                 "notifId": notification.id,
                 "appName": notification.appName,
                 "appIcon": notification.appIcon,
@@ -111,10 +136,10 @@ Singleton {
                 "notifObj": notification
             });
             root.added(notification);
-            timeoutComponent.createObject(root, {
-                "notification": notification
-            });
         }
+    }
+
+    list: ListModel {
     }
 
 }

@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import qs.config
-import qs.popup
+import qs.menus
 import qs.services
 
 Rectangle {
@@ -13,7 +13,7 @@ Rectangle {
     implicitWidth: clockText.implicitWidth + 12
     implicitHeight: 28
     radius: Config.radius
-    color: clockArea.containsMouse ? Config.accent : Config.bgDark
+    color: clockArea.containsMouse ? Config.accent : Config.highlight
 
     Text {
         id: clockText
@@ -22,6 +22,7 @@ Rectangle {
         color: clockArea.containsMouse ? Config.bgDark : Config.foreground
         text: ClockService.timeStr
         font.pixelSize: Config.fontSize
+        font.family: Config.font
     }
 
     MouseArea {
@@ -32,7 +33,7 @@ Rectangle {
         onClicked: clockPopup.toggle()
     }
 
-    Popup {
+    Menu {
         id: clockPopup
 
         anchorItem: clockBtn
@@ -104,6 +105,7 @@ Rectangle {
                     text: "UTC" + (new Date().getTimezoneOffset() <= 0 ? "+" : "-") + Math.abs(new Date().getTimezoneOffset() / 60)
                     color: "gray"
                     font.pixelSize: Config.fontSize - 1
+                    font.family: Config.font
                 }
 
                 Text {
@@ -112,6 +114,7 @@ Rectangle {
                     text: Qt.formatDate(new Date(), "IST")
                     color: Config.foreground
                     font.pixelSize: Config.fontSize - 1
+                    font.family: Config.font
                 }
 
             }

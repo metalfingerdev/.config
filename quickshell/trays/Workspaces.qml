@@ -40,7 +40,7 @@ Repeater {
         width: 28
         height: 28
         radius: Config.radius
-        color: wsMouseArea.containsMouse ? Config.accent : Config.bgDark
+        color: wsMouseArea.containsMouse ? Config.accent : Config.highlight
 
         Text {
             anchors.centerIn: parent

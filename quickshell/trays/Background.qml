@@ -27,7 +27,7 @@ Repeater {
         width: 28
         height: 28
         radius: Config.radius
-        color: "transparent"
+        color: Config.highlight
 
         IconImage {
             anchors.centerIn: parent

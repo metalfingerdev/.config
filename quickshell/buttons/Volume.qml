@@ -3,16 +3,16 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import qs.config
-import qs.popup
+import qs.menus
 import qs.services
 
 Rectangle {
     id: volBtn
 
-    implicitWidth: volIcon.implicitWidth + 12
+    implicitWidth: 28
     implicitHeight: 28
     radius: Config.radius
-    color: volArea.containsMouse ? Config.accent : Config.bgDark
+    color: volArea.containsMouse ? Config.accent : Config.highlight
 
     Text {
         id: volIcon
@@ -46,7 +46,7 @@ Rectangle {
         onClicked: volPopup.toggle()
     }
 
-    Popup {
+    Menu {
         id: volPopup
 
         anchorItem: volBtn

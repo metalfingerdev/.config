@@ -2,16 +2,16 @@
 import QtQuick
 import Quickshell
 import qs.config
-import qs.popup
+import qs.menus
 import qs.services
 
 Rectangle {
     id: pwrBtn
 
-    implicitWidth: batteryText.implicitWidth + 12
+    implicitWidth: 28
     implicitHeight: 28
     radius: Config.radius
-    color: pwrArea.containsMouse ? Config.accent : Config.bgDark
+    color: pwrArea.containsMouse ? Config.accent : Config.highlight
 
     Text {
         id: batteryText
@@ -31,7 +31,7 @@ Rectangle {
         onClicked: batteryPopup.toggle()
     }
 
-    Popup {
+    Menu {
         id: batteryPopup
 
         anchorItem: pwrBtn
@@ -71,6 +71,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     font.bold: true
                     font.pixelSize: Config.fontSize
+                    font.family: Config.font
                     color: Config.foreground
                     text: {
                         if (!UPower.isPresent)
