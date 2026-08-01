@@ -7,10 +7,12 @@
 -- require("modules.monitors")
 -- require("modules.autostart")
 -- require("modules.variables")
-require("modules.design")
+-- require("modules.design")
 -- require("modules.input")
 -- require("modules.keybinds")
-require("modules.windowrules")
+-- require("modules.windowrules")
+
+
 
 
 -- Variables
@@ -20,7 +22,6 @@ hl.config({
         gaps_in = 4,
         gaps_out = { top = 8, right = 8, bottom = 8, left = 8 },
         float_gaps = { top = 8, right = 8, bottom = 8, left = 8 },
-
         col = {
             active_border   = "rgb(d8cab8)",
             inactive_border = "rgb(AC82E9)",
@@ -30,7 +31,6 @@ hl.config({
         allow_tearing = false,
         resize_corner = 0,
         modal_parent_blocking = true,
-
         snap = {
             enabled = false,
             border_overlap = false,
@@ -230,6 +230,51 @@ local function make_toggle_focus_layer(deps)
     end
 end
 
+local function shift_move_or_swap(direction)
+    return function()
+        local aw = hl.get_active_window()
+        if aw == nil then return end
+        if aw.floating then
+            -- For floating windows, perform a directional move
+            local dx, dy = 0, 0
+            if direction == "left" then dx = -100 end
+            if direction == "right" then dx = 100 end
+            if direction == "up" then dy = -100 end
+            if direction == "down" then dy = 100 end
+            hl.dispatch(hl.dsp.window.move({ x = dx, y = dy, relative = true }))
+        else
+            local dir_map = { left = "l", right = "r", up = "u", down = "d" }
+            hl.dispatch(hl.dsp.window.swap({ direction = dir_map[direction] }))
+        end
+    end
+end
+
+local resize_step = 100
+local fine_step = 10
+local split_delta = 0.05
+local fine_split = 0.01
+
+local function ctrl_resize(dir, fine)
+    return function()
+        local aw = hl.get_active_window()
+        if aw and aw.floating then
+            -- Resize floating windows by pixels
+            local dx, dy = 0, 0
+            local step = fine and fine_step or resize_step
+            if dir == "left" then dx = -step end
+            if dir == "right" then dx = step end
+            if dir == "up" then dy = -step end
+            if dir == "down" then dy = step end
+            hl.dispatch(hl.dsp.window.resize({ x = dx, y = dy, relative = true }))
+        else
+            local e = (dir == "right" or dir == "down") and "expand" or "shrink"
+
+            local delta = fine and fine_split or split_delta
+            local sign = (dir == "right" or dir == "down") and "+" or "-"
+            hl.dispatch(hl.dsp.layout("splitratio " .. sign .. tostring(delta)))
+        end
+    end
+end
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(appLauncher))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(explorer))
@@ -267,66 +312,10 @@ hl.bind(mainMod .. " + ALT + SHIFT + left", hl.dsp.window.move({ x = -10, y = 0,
 hl.bind(mainMod .. " + ALT + SHIFT + right", hl.dsp.window.move({ x = 10, y = 0, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + ALT + SHIFT + up", hl.dsp.window.move({ x = 0, y = -10, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + ALT + SHIFT + down", hl.dsp.window.move({ x = 0, y = 10, relative = true }), { repeating = true })
-
-local function shift_move_or_swap(direction)
-    return function()
-        local aw = hl.get_active_window()
-        if aw == nil then return end
-        if aw.floating then
-            -- For floating windows, perform a directional move
-            local dx, dy = 0, 0
-            if direction == "left" then dx = -100 end
-            if direction == "right" then dx = 100 end
-            if direction == "up" then dy = -100 end
-            if direction == "down" then dy = 100 end
-            hl.dispatch(hl.dsp.window.move({ x = dx, y = dy, relative = true }))
-        else
-            if hy3 and hy3.move_window then
-                hy3.move_window(direction)()
-                if hy3.equalize then hy3.equalize() end
-            else
-                local dir_map = { left = "l", right = "r", up = "u", down = "d" }
-                hl.dispatch(hl.dsp.window.swap({ direction = dir_map[direction] }))
-            end
-        end
-    end
-end
 hl.bind(mainMod .. " + SHIFT + left", shift_move_or_swap("left"))
 hl.bind(mainMod .. " + SHIFT + right", shift_move_or_swap("right"))
 hl.bind(mainMod .. " + SHIFT + up", shift_move_or_swap("up"))
 hl.bind(mainMod .. " + SHIFT + down", shift_move_or_swap("down"))
-
--- Use pixel-based resize for tiled windows and pixel move for floating ones.
--- The step matches SUPER+ALT movement (100px) and a fine step for SHIFT (10px).
-local resize_step = 100
-local fine_step = 10
-local split_delta = 0.05
-local fine_split = 0.01
-
-local function ctrl_resize(dir, fine)
-    return function()
-        local aw = hl.get_active_window()
-        if aw and aw.floating then
-            -- Resize floating windows by pixels
-            local dx, dy = 0, 0
-            local step = fine and fine_step or resize_step
-            if dir == "left" then dx = -step end
-            if dir == "right" then dx = step end
-            if dir == "up" then dy = -step end
-            if dir == "down" then dy = step end
-            hl.dispatch(hl.dsp.window.resize({ x = dx, y = dy, relative = true }))
-        else
-            local e = (dir == "right" or dir == "down") and "expand" or "shrink"
-            if hy3 and hy3.expand then
-                hy3.expand(e)()
-            else
-                local delta = fine and fine_split or split_delta
-                local sign = (dir == "right" or dir == "down") and "+" or "-"
-                hl.dispatch(hl.dsp.layout("splitratio " .. sign .. tostring(delta)))
-            end
-        end
-    end
-end
 
 -- CTRL + arrows resize; use repeating to allow holding for continuous changes
 hl.bind(mainMod .. " + CTRL + left", ctrl_resize("left", false), { repeating = true })
@@ -499,6 +488,76 @@ hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+
+
+local floating_widgets = { "calcurse", "nmtui", "pulsemixer", "bluetuith", "btop" }
+for _, cls in ipairs(floating_widgets) do
+    hl.window_rule({
+        name = "float-" .. cls,
+        match = { class = "^(" .. cls .. ")$" },
+        float = true,
+        size = { 1080, 720 },
+        move = { "(monitor_w-window_w)/2", "(monitor_h-window_h)/2" },
+    })
+end
+
+-- Fix dragging issues with XWayland
+hl.window_rule({
+    match = {
+        class = "^$",
+        title = "^$",
+        xwayland = true,
+        float = true,
+        fullscreen = false,
+        pin = false,
+    },
+    no_focus = true,
+})
+
+-- Blur the quickshell panels (requires WlrLayershell.namespace set in the QML side)
+hl.layer_rule({
+    match = { namespace = "quickshell:.*" },
+    blur = true,
+    ignore_alpha = 0.4,
+})
+
+-- Force Sekiro to launch in fullscreen automatically
+-- Watch for late window titles and force fullscreen when Sekiro loads
+hl.on("window.title", function(w)
+    if w ~= nil and (w.title == "Sekiro" or w.class == "sekiro.exe") then
+        hl.dispatch(hl.dsp.window.fullscreen({ mode = "fullscreen", action = "set" }))
+    end
+end)
+
+
+-- Default curves and animations, see https://wiki.hypr.land/Configuring/Advanced-and-Cool/Animations/
+hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
+hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
+hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
+hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1 } } })
+hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
+
+-- Snappy, macOS-like spring: High stiffness for speed, balanced dampening for a clean stop
+hl.curve("spring", { type = "spring", mass = 1, stiffness = 350, dampening = 26 })
+
+-- Applied animations
+hl.animation({ leaf = "global", enabled = true, speed = 3, bezier = "default" })
+hl.animation({ leaf = "border", enabled = true, speed = 2.5, bezier = "easeOutQuint" })
+
+-- Windows: Using the fast spring for opening/movement, and a quick bezier for closing
+hl.animation({ leaf = "windows", enabled = true, speed = 2.5, spring = "spring" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 2.5, spring = "spring", style = "popin 87%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.5, bezier = "easeOutQuint", style = "popin 87%" })
+
+-- Layers
+hl.animation({ leaf = "fadeLayersIn", enabled = true, speed = 1.5, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.0, bezier = "almostLinear" })
+
+-- Workspaces: Using the spring here adds a very fluid, Apple-like swipe feel
+hl.animation({ leaf = "workspacesIn", enabled = true, speed = 2.5, spring = "spring", style = "slide" })
+hl.animation({ leaf = "workspacesOut", enabled = true, speed = 2.5, spring = "spring", style = "slide" })
+
+hl.animation({ leaf = "zoomFactor", enabled = true, speed = 2.5, bezier = "quick" })
 
 
 -- Autostart
