@@ -1,0 +1,12 @@
+-- Autostart
+hl.on("hyprland.start", function()
+    hl.exec_cmd("quickshell")
+    hl.exec_cmd("awww-daemon")
+    hl.exec_cmd("awww img ~/Pictures/Wallpapers/marin.gif")
+    hl.exec_cmd("/usr/lib/hyprpolkitagent/hyprpolkitagent")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme 'diinki-retro-dark'")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface font-name 'SF Pro 12'")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface document-font-name 'SF Pro Text 12'")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface monospace-font-name 'Maple Mono 12'")
+end)
